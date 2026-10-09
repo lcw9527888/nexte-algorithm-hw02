@@ -1,0 +1,123 @@
+==================== NEXT-E 算法组第二次作业 命令记录 ====================
+
+# ===== 一、Git 仓库初始化与分支管理 =====
+# 1. 克隆远程仓库到本地：https://github.com/lcw9527888/nexte-algorithm-hw02
+git clone <https://github.com/lcw9527888/nexte-algorithm-hw02>
+cd nexte-algorithm-hw02
+
+# 2. 配置提交者信息
+git config user.name "lcw9527888"
+git config user.email "lcw9527888@gmail.com"
+
+# 3. 查看状态与修改
+git status
+git diff
+
+# 4. 创建 .gitignore 和初始项目结构后，进行初始化提交
+# （使用编辑器创建了 README.md, .gitignore, CMakeLists.txt, src/占位文件）
+git add README.md .gitignore CMakeLists.txt src/
+git commit -m "Initialize C++ project skeleton"
+
+# 5. 创建功能分支完成三题
+git switch -c feature/algorithms
+
+# 6. 每完成一题及对应的测试，就提交一次
+git add src/streak.cpp tests/streak_*.in tests/streak_*.out
+git commit -m "Implement streak with edge tests"
+
+git add src/unique_ids.cpp tests/unique_ids_*.in tests/unique_ids_*.out
+git commit -m "Implement unique_ids with edge tests"
+
+git add src/range_sum.cpp tests/range_sum_*.in tests/range_sum_*.out
+git commit -m "Implement range_sum with edge tests"
+
+# 7. 补全文档和批量测试脚本
+# （使用编辑器创建了 run_tests.sh, README.md, commands.txt）
+git add run_tests.sh README.md commands.txt tests/
+git commit -m "Add batch test script and project documentation"
+
+# 8. 切回默认分支并合并功能分支
+git switch main
+git merge feature/algorithms
+
+# 9. 推送到 GitHub
+git push -u origin main
+
+# 10. 查看提交历史
+git log --oneline --graph --all
+
+# ===== 二、CMake 构建与运行 =====
+# 1. 生成构建目录（在项目根目录执行）
+cmake -S . -B build
+
+# 2. 编译三个可执行文件
+cmake --build build
+
+# 3. 运行三道题的样例测试
+./build/streak < tests/streak_sample.in
+./build/unique_ids < tests/unique_ids_sample.in
+./build/range_sum < tests/range_sum_sample.in
+
+# 4. 赋予批量测试脚本执行权限并运行
+chmod +x run_tests.sh
+./run_tests.sh
+
+# ===== 三、关键终端输出记录 =====
+# CMake 构建成功输出：
+# [100%] Built target streak
+# [100%] Built target unique_ids
+# [100%] Built target range_sum
+
+# 批量测试运行输出（共12个测试全部通过）：
+# ========== 开始测试 ==========
+# [PASS] streak_sample
+# [PASS] streak_edge1
+# [PASS] streak_edge2
+# [PASS] streak_edge3
+# [PASS] unique_ids_sample
+# [PASS] unique_ids_edge1
+# [PASS] unique_ids_edge2
+# [PASS] unique_ids_edge3
+# [PASS] range_sum_sample
+# [PASS] range_sum_edge1
+# [PASS] range_sum_edge2
+# [PASS] range_sum_edge3
+# ==============================
+# 测试结果: 通过 12 个, 失败 0 个
+# 所有测试通过！
+
+# ===== 四、报错与解决记录 =====
+# 1. 报错：chond: command not found
+#    原因：打错命令了，把 chmod 打成了 chond。
+#    解决：重新输入正确的 chmod +x run_tests.sh。
+
+# 2. 报错：./run_tests.sh: No such file or directory
+#    原因：忘记创建 run_tests.sh 文件。
+#    解决：先使用 cat > run_tests.sh << 'EOF' ... EOF 创建脚本，再赋予执行权限。
+
+# 3. 警告：Clock skew detected. Your build may be incomplete.
+#    原因：WSL 子系统时间与 Windows 主机时间不同步。
+#    解决：不影响程序编译和运行，予以忽略；也可用 sudo hwclock -s 同步时间。
+
+# 4. 问题：第一次只跑通了7个测试，没有达到预期的12个。
+#    原因：run_tests.sh 脚本里只写了7个 check 命令，部分测试文件未生成。
+#    解决：补齐了 streak_edge3、unique_ids_edge2、unique_ids_edge3、range_sum_edge2、range_sum_edge3 测试文件，并更新脚本后重新运行，12个测试全部通过。
+
+# ===== 五、最终提交与验证 =====
+# 1. 确认全部文件都已提交
+git status
+
+# 2. 获取最终 commit ID（此ID填入邮件）
+git rev-parse HEAD
+# 输出：<把你终端里实际的 commit ID 复制粘贴到这里>
+
+# 3. 另选一个新目录重新克隆验证
+cd /tmp
+git clone <https://github.com/lcw9527888/nexte-algorithm-hw02> verify-hw02
+cd verify-hw02
+cmake -S . -B build
+cmake --build build
+./run_tests.sh
+# 结果：12个测试全部通过，说明无未提交依赖。
+
+==================== 记录结束 ====================
